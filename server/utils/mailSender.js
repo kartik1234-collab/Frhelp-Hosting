@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 const mailSender = async (email, title, body) => {
   try {
     const transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST, // use env
+      host: "smtp.gmail.com",
       port: 587,
       secure: false,
       auth: {
@@ -13,17 +13,16 @@ const mailSender = async (email, title, body) => {
     });
 
     const info = await transporter.sendMail({
-      from: `"FrHelp Support" <${process.env.MAIL_USER}>`,
+      from: `"FrHelp" <${process.env.MAIL_USER}>`,
       to: email,
       subject: title,
       html: body,
     });
 
-    console.log("✅ EMAIL SENT:", info.response);
+    console.log("EMAIL SENT:", info.response);
     return info;
-
   } catch (error) {
-    console.error("❌ EMAIL ERROR:", error);
+    console.error("EMAIL ERROR:", error);
     throw error;
   }
 };
