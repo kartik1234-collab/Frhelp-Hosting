@@ -71,31 +71,13 @@ const PORT = process.env.PORT || 4000;
 // ================= DATABASE =================
 database.connect();
 
-// ================= CORS FIX =================
-const allowedOrigins = [
-  "http://localhost:3000",
-  "https://frhelp-hosting.vercel.app",
-  "https://frhelp-hosting-go6gf5fhe-kartik1234-collabs-projects.vercel.app",
-];
-
+// ================= CORS (FINAL FIX) =================
 app.use(
   cors({
-    origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        console.log("❌ CORS blocked for:", origin);
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
+    origin: true,
     credentials: true,
   })
 );
-
-// handle preflight requests
-// app.options("/*", cors());
 
 // ================= MIDDLEWARE =================
 app.use(express.json());
@@ -123,11 +105,11 @@ app.use("/api/v1/AI", aiRoutes);
 app.get("/", (req, res) => {
   return res.json({
     success: true,
-    message: "Your server is up and running....",
+    message: "Server is running",
   });
 });
 
 // ================= START SERVER =================
 app.listen(PORT, () => {
-  console.log(`🚀 App is running at ${PORT}`);
+  console.log(`🚀 Server running on ${PORT}`);
 });

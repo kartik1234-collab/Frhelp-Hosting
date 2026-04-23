@@ -216,7 +216,6 @@ exports.sendotp = async (req, res) => {
     return res.status(200).json({
       success: true,
       message: "OTP generated successfully",
-      otp, // ⚠️ keep only for development
     });
   } catch (error) {
     console.error("SEND OTP ERROR:", error);
