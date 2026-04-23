@@ -72,12 +72,11 @@ const PORT = process.env.PORT || 4000;
 database.connect();
 
 // ================= CORS (FINAL FIX) =================
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  })
-);
+
+app.use(cors({
+  origin: "https://frhelp-frontend.vercel.app",
+  credentials: true,
+}));
 
 // ================= MIDDLEWARE =================
 app.use(express.json());
