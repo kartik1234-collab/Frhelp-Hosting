@@ -169,11 +169,10 @@ exports.login = async (req, res) => {
 
 // ================= SEND OTP =================
 exports.sendotp = async (req, res) => {
-	console.log("SEND OTP FUNCTION HIT");
   try {
-    const { email } = req.body;
+    console.log("🔥 SEND OTP FUNCTION HIT");
 
-    console.log("📩 SEND OTP CALLED FOR:", email);
+    const { email } = req.body;
 
     if (!email) {
       return res.status(400).json({
@@ -182,6 +181,7 @@ exports.sendotp = async (req, res) => {
       });
     }
 
+    // check user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -190,44 +190,40 @@ exports.sendotp = async (req, res) => {
       });
     }
 
+    // generate OTP
     const otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
       specialChars: false,
     });
 
-    console.log("🔢 OTP GENERATED:", otp);
+    console.log("✅ Generated OTP:", otp);
 
+    // save OTP in DB
     await OTP.create({ email, otp });
 
-    // 🔥 FORCE EMAIL EXECUTION
-    try {
-      const mailResponse = await mailSender(
-        email,
-        "Verification Email",
-        `<h2>Your OTP is: ${otp}</h2>`
-      );
+    // 🔥 SEND EMAIL (THIS WAS MISSING / BROKEN)
+    await mailSender(
+      email,
+      "Your OTP for FrHelp Signup",
+      `<h2>Your OTP is: ${otp}</h2>`
+    );
 
-      console.log("✅ OTP EMAIL SENT:", mailResponse.response);
-    } catch (mailError) {
-      console.error("❌ EMAIL FAILED:", mailError);
-    }
+    console.log("📧 EMAIL SENT SUCCESSFULLY");
 
     return res.status(200).json({
       success: true,
-      message: "OTP generated successfully",
+      message: "OTP sent successfully",
     });
 
   } catch (error) {
-    console.error("❌ SEND OTP ERROR FULL:", error);
-
+    console.error("❌ SEND OTP ERROR:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to send OTP",
     });
   }
 };
-
 
 
 // ================= CHANGE PASSWORD =================
