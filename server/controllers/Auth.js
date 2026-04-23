@@ -172,7 +172,6 @@ exports.sendotp = async (req, res) => {
   try {
     const { email } = req.body;
 
-    // 1️⃣ Validate email
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -180,7 +179,6 @@ exports.sendotp = async (req, res) => {
       });
     }
 
-    // 2️⃣ Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -189,39 +187,35 @@ exports.sendotp = async (req, res) => {
       });
     }
 
-    // 3️⃣ Generate OTP
     const otp = otpGenerator.generate(6, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
       specialChars: false,
     });
 
-    // 4️⃣ Save OTP in DB (MOST IMPORTANT)
     await OTP.create({ email, otp });
 
-    // 5️⃣ Send OTP email (do NOT fail OTP if email fails)
-    try {
-      const mailResponse = await mailSender(
-        email,
-        "Verification Email",
-        `Your OTP for verification is: ${otp}`
-      );
-      console.log("OTP email sent:", mailResponse?.response);
-    } catch (emailError) {
-      console.error("OTP EMAIL FAILED:", emailError.message);
-      // Do NOT return error here
-    }
+    // 🔥 FORCE EMAIL ERROR TO SHOW
+    const mailResponse = await mailSender(
+      email,
+      "Verification Email",
+      `Your OTP for verification is: ${otp}`
+    );
 
-    // 6️⃣ Final response
+    console.log("✅ OTP EMAIL SENT:", mailResponse.response);
+
     return res.status(200).json({
       success: true,
-      message: "OTP generated successfully",
+      message: "OTP sent successfully",
     });
+
   } catch (error) {
-    console.error("SEND OTP ERROR:", error);
+    console.error("❌ SEND OTP ERROR FULL:", error);
+
     return res.status(500).json({
       success: false,
-      message: "OTP send failed",
+      message: "Failed to send OTP",
+      error: error.message,
     });
   }
 };
