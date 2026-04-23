@@ -170,7 +170,7 @@ exports.login = async (req, res) => {
 // ================= SEND OTP =================
 exports.sendotp = async (req, res) => {
   try {
-    console.log("🔥 SEND OTP FUNCTION HIT");
+    console.log("SEND OTP HIT");
 
     const { email } = req.body;
 
@@ -181,7 +181,6 @@ exports.sendotp = async (req, res) => {
       });
     }
 
-    // check user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -191,36 +190,21 @@ exports.sendotp = async (req, res) => {
     }
 
     // generate OTP
-    const otp = otpGenerator.generate(6, {
-      upperCaseAlphabets: false,
-      lowerCaseAlphabets: false,
-      specialChars: false,
-    });
+    const otp = Math.floor(100000 + Math.random() * 900000);
 
-    console.log("✅ Generated OTP:", otp);
-
-    // save OTP in DB
-    await OTP.create({ email, otp });
-
-    // 🔥 SEND EMAIL (THIS WAS MISSING / BROKEN)
-    await mailSender(
-      email,
-      "Your OTP for FrHelp Signup",
-      `<h2>Your OTP is: ${otp}</h2>`
-    );
-
-    console.log("📧 EMAIL SENT SUCCESSFULLY");
+    console.log("OTP GENERATED:", otp);
 
     return res.status(200).json({
       success: true,
-      message: "OTP sent successfully",
+      message: "OTP generated successfully",
+      otp, // keep this for testing
     });
 
   } catch (error) {
-    console.error("❌ SEND OTP ERROR:", error);
+    console.error("SEND OTP ERROR:", error);
     return res.status(500).json({
       success: false,
-      message: "Failed to send OTP",
+      message: "Error sending OTP",
     });
   }
 };
