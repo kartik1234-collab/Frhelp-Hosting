@@ -56,56 +56,79 @@ const profileRoutes = require("./routes/Profile");
 const paymentRoutes = require("./routes/Payments");
 const courseRoutes = require("./routes/Course");
 const contactUsRoute = require("./routes/Contact");
+const aiRoutes = require("./routes/AI");
+
 const database = require("./config/database");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-const {cloudinaryConnect } = require("./config/cloudinary");
+const { cloudinaryConnect } = require("./config/cloudinary");
 const fileUpload = require("express-fileupload");
 const dotenv = require("dotenv");
-const aiRoutes = require("./routes/AI");
 
 dotenv.config();
 const PORT = process.env.PORT || 4000;
 
-//database connect
+// ================= DATABASE =================
 database.connect();
-//middlewares
-app.use(express.json());
-app.use(cookieParser());
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://frhelp-hosting.vercel.app"
-  ],
-  credentials: true,
-}));
+
+// ================= CORS FIX =================
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://frhelp-hosting.vercel.app",
+  "https://frhelp-hosting-go6gf5fhe-kartik1234-collabs-projects.vercel.app",
+];
 
 app.use(
-	fileUpload({
-		useTempFiles:true,
-		tempFileDir:"/tmp",
-	})
-)
-//cloudinary connection
+  cors({
+    origin: function (origin, callback) {
+      // allow requests like Postman
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        console.log("❌ CORS blocked for:", origin);
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
+// handle preflight requests
+app.options("*", cors());
+
+// ================= MIDDLEWARE =================
+app.use(express.json());
+app.use(cookieParser());
+
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp",
+  })
+);
+
+// ================= CLOUDINARY =================
 cloudinaryConnect();
 
-//routes
+// ================= ROUTES =================
 app.use("/api/v1/auth", userRoutes);
 app.use("/api/v1/profile", profileRoutes);
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/payment", paymentRoutes);
 app.use("/api/v1/reach", contactUsRoute);
 app.use("/api/v1/AI", aiRoutes);
-//def route
 
+// ================= DEFAULT ROUTE =================
 app.get("/", (req, res) => {
-	return res.json({
-		success:true,
-		message:'Your server is up and running....'
-	});
+  return res.json({
+    success: true,
+    message: "Your server is up and running....",
+  });
 });
 
+// ================= START SERVER =================
 app.listen(PORT, () => {
-	console.log(`App is running at ${PORT}`)
-})
-
+  console.log(`🚀 App is running at ${PORT}`);
+});
