@@ -81,7 +81,6 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // allow requests like Postman
       if (!origin) return callback(null, true);
 
       if (allowedOrigins.includes(origin)) {
@@ -96,7 +95,7 @@ app.use(
 );
 
 // handle preflight requests
-app.options("*", cors());
+// app.options("/*", cors());
 
 // ================= MIDDLEWARE =================
 app.use(express.json());
