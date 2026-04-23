@@ -172,6 +172,8 @@ exports.sendotp = async (req, res) => {
   try {
     const { email } = req.body;
 
+    console.log("📩 SEND OTP CALLED FOR:", email);
+
     if (!email) {
       return res.status(400).json({
         success: false,
@@ -193,20 +195,26 @@ exports.sendotp = async (req, res) => {
       specialChars: false,
     });
 
+    console.log("🔢 OTP GENERATED:", otp);
+
     await OTP.create({ email, otp });
 
-    // 🔥 FORCE EMAIL ERROR TO SHOW
-    const mailResponse = await mailSender(
-      email,
-      "Verification Email",
-      `Your OTP for verification is: ${otp}`
-    );
+    // 🔥 FORCE EMAIL EXECUTION
+    try {
+      const mailResponse = await mailSender(
+        email,
+        "Verification Email",
+        `<h2>Your OTP is: ${otp}</h2>`
+      );
 
-    console.log("✅ OTP EMAIL SENT:", mailResponse.response);
+      console.log("✅ OTP EMAIL SENT:", mailResponse.response);
+    } catch (mailError) {
+      console.error("❌ EMAIL FAILED:", mailError);
+    }
 
     return res.status(200).json({
       success: true,
-      message: "OTP sent successfully",
+      message: "OTP generated successfully",
     });
 
   } catch (error) {
@@ -215,7 +223,6 @@ exports.sendotp = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to send OTP",
-      error: error.message,
     });
   }
 };
