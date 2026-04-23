@@ -169,6 +169,7 @@ exports.login = async (req, res) => {
 
 // ================= SEND OTP =================
 exports.sendotp = async (req, res) => {
+	console.log("SEND OTP FUNCTION HIT");
   try {
     const { email } = req.body;
 
