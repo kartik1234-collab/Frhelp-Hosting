@@ -168,6 +168,7 @@ exports.login = async (req, res) => {
 
 
 // ================= SEND OTP =================
+// ================= SEND OTP =================
 exports.sendotp = async (req, res) => {
   try {
     console.log("SEND OTP HIT");
@@ -194,10 +195,19 @@ exports.sendotp = async (req, res) => {
 
     console.log("OTP GENERATED:", otp);
 
+    // 🔥 SAVE OTP IN DB
+    await OTP.create({ email, otp });
+
+    // 🔥 SEND EMAIL
+    await mailSender(
+      email,
+      "Your OTP Verification Code",
+      `<h2>Your OTP is: ${otp}</h2>`
+    );
+
     return res.status(200).json({
       success: true,
-      message: "OTP generated successfully",
-      otp, // keep this for testing
+      message: "OTP sent successfully",
     });
 
   } catch (error) {
@@ -208,7 +218,6 @@ exports.sendotp = async (req, res) => {
     });
   }
 };
-
 
 // ================= CHANGE PASSWORD =================
 exports.changePassword = async (req, res) => {
