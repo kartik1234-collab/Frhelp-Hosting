@@ -73,27 +73,29 @@ database.connect();
 
 // ================= CORS (FINAL FIX) =================
 // ================= CORS (FINAL FIX - WORKING) =================
+// ================= CORS (FINAL CLEAN SETUP) =================
 const allowedOrigins = [
   "http://localhost:3000",
   "https://frhelp-frontend.vercel.app",
-  "https://frhelp-frontend-rkyz5maor-kartik1234-collabs-projects.vercel.app",
 ];
 
-app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true);
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    } else {
-      console.log("❌ CORS blocked:", origin);
-      return callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-}));
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        console.log("❌ CORS blocked:", origin);
+        return callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
 
-// ✅ ADD THIS LINE (VERY IMPORTANT)
+// ✅ Handle preflight requests
 app.options("*", cors());
 
 // ================= MIDDLEWARE =================
