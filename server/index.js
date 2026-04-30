@@ -78,7 +78,7 @@ app.use(cors({
   origin: true,
   credentials: true,
 }));
-
+app.options("*", cors());
 // ================= MIDDLEWARE =================
 app.use(express.json());
 app.use(cookieParser());
