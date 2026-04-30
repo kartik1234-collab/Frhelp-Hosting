@@ -17,38 +17,38 @@ const {
 // ================= SEND OTP =================
 export function sendOtp(email, navigate) {
   return async (dispatch) => {
-    const toastId = toast.loading("Sending OTP...")
-    dispatch(setLoading(true))
+    const toastId = toast.loading("Sending OTP...");
+    dispatch(setLoading(true));
 
     try {
       const response = await apiConnector("POST", SENDOTP_API, {
         email,
         checkUserPresent: true,
-      })
+      });
 
-      console.log("SENDOTP API RESPONSE............", response)
+      console.log("SENDOTP API RESPONSE:", response);
 
       if (!response.data.success) {
-        throw new Error(response.data.message)
+        throw new Error(response.data.message);
       }
 
-      // ✅ FIXED OTP PATH
-      const otp = response.data.data?.otp || response.data.otp
+      // ✅ MAIN FIX (OTP SHOW)
+      const otp = response.data.otp;
 
-      // ✅ SIMPLE + STABLE TOAST
-      toast.success(`OTP: ${otp} (Copied)`)
+      toast.success(`OTP: ${otp}`);
 
-      navigator.clipboard.writeText(otp)
+      navigate("/verify-email");
 
-      navigate("/verify-email")
     } catch (error) {
-      console.log("SENDOTP API ERROR............", error)
-      toast.error("Could Not Send OTP")
+      console.log("SENDOTP ERROR:", error);
+
+      // ✅ FIX ERROR HANDLING
+      toast.error(error?.response?.data?.message || "Could not send OTP");
     }
 
-    dispatch(setLoading(false))
-    toast.dismiss(toastId)
-  }
+    dispatch(setLoading(false));
+    toast.dismiss(toastId);
+  };
 }
 
 // ================= SIGNUP =================
