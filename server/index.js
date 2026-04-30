@@ -67,7 +67,7 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 const PORT = process.env.PORT || 4000;
-console.log("🔥 NEW DEPLOY CHECK - CORS TRUE ACTIVE");
+console.log("🚀 FORCE REDEPLOY V2");
 // ================= DATABASE =================
 database.connect();
 
@@ -78,7 +78,7 @@ app.use(cors({
   origin: true,
   credentials: true,
 }));
-app.options("*", cors());
+
 // ================= MIDDLEWARE =================
 app.use(express.json());
 app.use(cookieParser());
