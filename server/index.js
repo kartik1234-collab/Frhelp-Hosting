@@ -67,7 +67,7 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 const PORT = process.env.PORT || 4000;
-
+console.log("🔥 NEW DEPLOY CHECK - CORS TRUE ACTIVE");
 // ================= DATABASE =================
 database.connect();
 
