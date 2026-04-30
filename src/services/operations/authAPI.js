@@ -32,33 +32,13 @@ export function sendOtp(email, navigate) {
         throw new Error(response.data.message)
       }
 
-      const otp = response.data.otp
+      // ✅ FIXED OTP PATH
+      const otp = response.data.data?.otp || response.data.otp
 
-      // ✅ SHOW OTP IN UI
-      toast.custom(
-        (t) => (
-          <div className="bg-white shadow-lg rounded-lg p-4 border w-[320px]">
-            <p className="text-sm text-gray-500 mb-1">Your OTP</p>
+      // ✅ SIMPLE + STABLE TOAST
+      toast.success(`OTP: ${otp} (Copied)`)
 
-            <div className="flex items-center justify-between">
-              <span className="text-xl font-bold tracking-widest">
-                {otp}
-              </span>
-
-              <button
-                onClick={() => {
-                  navigator.clipboard.writeText(otp)
-                  toast.success("Copied!")
-                }}
-                className="text-blue-600 text-sm font-medium hover:underline"
-              >
-                Copy
-              </button>
-            </div>
-          </div>
-        ),
-        { duration: 8000 }
-      )
+      navigator.clipboard.writeText(otp)
 
       navigate("/verify-email")
     } catch (error) {
