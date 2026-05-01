@@ -32,8 +32,30 @@ export function sendOtp(email, navigate) {
         throw new Error(response.data.message);
       }
 
-      // ✅ FINAL SUCCESS TOAST
-      toast.success("Email sent successfully 📩");
+      // 🔥 OTP TOAST UI WITH COPY BUTTON
+      const otp = response.data.otp;
+
+      toast.custom((t) => (
+        <div className="bg-white shadow-lg rounded-lg p-4 border w-[300px]">
+          <p className="text-sm text-gray-500 mb-2">Your OTP</p>
+
+          <div className="flex items-center justify-between">
+            <span className="font-bold text-lg tracking-widest">{otp}</span>
+
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(otp);
+                toast.success("Copied!");
+              }}
+              className="text-blue-600 text-sm font-medium"
+            >
+              Copy
+            </button>
+          </div>
+        </div>
+      ), {
+        duration: 12000, // ⏳ stays longer
+      });
 
       navigate("/verify-email");
 
@@ -169,7 +191,6 @@ export function getPasswordResetToken(email, setEmailSent) {
 
       const resetLink = response.data.resetLink
 
-      // ✅ SHOW RESET LINK BUTTON
       toast.custom(
         () => (
           <div className="bg-white shadow-lg rounded-lg p-4 border w-[320px]">
