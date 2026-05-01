@@ -192,23 +192,30 @@ exports.sendotp = async (req, res) => {
 
     // generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000);
-
     console.log("OTP GENERATED:", otp);
 
-    // 🔥 SAVE OTP IN DB
+    // save OTP
     await OTP.create({ email, otp });
 
-    // 🔥 SEND EMAIL
-    await mailSender(
+    // 🔥 SEND EMAIL (IMPORTANT FIX)
+    const mailResponse = await mailSender(
       email,
       "Your OTP Verification Code",
       `<h2>Your OTP is: ${otp}</h2>`
     );
 
+    // 🔴 CHECK MAIL SUCCESS
+    if (!mailResponse.success) {
+      return res.status(500).json({
+        success: false,
+        message: "Email sending failed",
+      });
+    }
+
     return res.status(200).json({
       success: true,
-      message: "OTP sent successfully",
-	  otp,
+      message: "OTP sent + Email delivered",
+      otp,
     });
 
   } catch (error) {
@@ -219,7 +226,6 @@ exports.sendotp = async (req, res) => {
     });
   }
 };
-
 // ================= CHANGE PASSWORD =================
 exports.changePassword = async (req, res) => {
 	try {

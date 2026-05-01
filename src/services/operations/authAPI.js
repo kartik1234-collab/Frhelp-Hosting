@@ -17,7 +17,7 @@ const {
 // ================= SEND OTP =================
 export function sendOtp(email, navigate) {
   return async (dispatch) => {
-    const toastId = toast.loading("Sending OTP...");
+    const toastId = toast.loading("Sending Email...");
     dispatch(setLoading(true));
 
     try {
@@ -32,18 +32,17 @@ export function sendOtp(email, navigate) {
         throw new Error(response.data.message);
       }
 
-      // ✅ MAIN FIX (OTP SHOW)
-      const otp = response.data.otp;
-
-      toast.success(`OTP: ${otp}`);
+      // ✅ FINAL SUCCESS TOAST
+      toast.success("Email sent successfully 📩");
 
       navigate("/verify-email");
 
     } catch (error) {
       console.log("SENDOTP ERROR:", error);
 
-      // ✅ FIX ERROR HANDLING
-      toast.error(error?.response?.data?.message || "Could not send OTP");
+      toast.error(
+        error?.response?.data?.message || "Failed to send email"
+      );
     }
 
     dispatch(setLoading(false));
