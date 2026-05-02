@@ -1,74 +1,4 @@
-// import { useState } from "react"
-// import { VscSignOut } from "react-icons/vsc"
-// import { useDispatch, useSelector } from "react-redux"
-// import { useNavigate } from "react-router-dom"
-
-// import { sidebarLinks } from "../../../data/dashboard-links"
-// import { logout } from "../../../services/operations/authAPI"
-// import ConfirmationModal from "../../common/ConfirmationModal"
-// import SidebarLink from "./SidebarLink"
-
-// export default function Sidebar() {
-//   const { user, loading: profileLoading } = useSelector(
-//     (state) => state.profile
-//   )
-//   const { loading: authLoading } = useSelector((state) => state.auth)
-//   const dispatch = useDispatch()
-//   const navigate = useNavigate()
-//   // to keep track of confirmation modal
-//   const [confirmationModal, setConfirmationModal] = useState(null)
-
-//   if (profileLoading || authLoading) {
-//     return (
-//       <div className="grid h-[calc(100vh-3.5rem)] min-w-[220px] items-center border-r-[1px] border-r-richblack-700 bg-richblack-800">
-//         <div className="spinner"></div>
-//       </div>
-//     )
-//   }
-
-//   return (
-//     <>
-//       <div className="flex h-[calc(100vh-3.5rem)] min-w-[220px] flex-col border-r-[1px] border-r-richblack-700 bg-richblack-800 py-10">
-//         <div className="flex flex-col">
-//           {sidebarLinks.map((link) => {
-//             if (link.type && user?.accountType !== link.type) return null
-//             return (
-//               <SidebarLink key={link.id} link={link} iconName={link.icon} />
-//             )
-//           })}
-//         </div>
-//         <div className="mx-auto mt-6 mb-6 h-[1px] w-10/12 bg-richblack-700" />
-//         <div className="flex flex-col">
-//           <SidebarLink
-//             link={{ name: "Settings", path: "/dashboard/settings" }}
-//             iconName="VscSettingsGear"
-//           />
-//           <button
-//             onClick={() =>
-//               setConfirmationModal({
-//                 text1: "Are you sure?",
-//                 text2: "You will be logged out of your account.",
-//                 btn1Text: "Logout",
-//                 btn2Text: "Cancel",
-//                 btn1Handler: () => dispatch(logout(navigate)),
-//                 btn2Handler: () => setConfirmationModal(null),
-//               })
-//             }
-//             className="px-8 py-2 text-sm font-medium text-richblack-300"
-//           >
-//             <div className="flex items-center gap-x-2">
-//               <VscSignOut className="text-lg" />
-//               <span>Logout</span>
-//             </div>
-//           </button>
-//         </div>
-//       </div>
-//       {confirmationModal && <ConfirmationModal modalData={confirmationModal} />}
-//     </>
-//   )
-// }
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { VscSignOut, VscMenu } from "react-icons/vsc"
 import { FiMoon } from "react-icons/fi"
 import { useDispatch, useSelector } from "react-redux"
@@ -91,11 +21,26 @@ export default function Sidebar() {
 
   const [confirmationModal, setConfirmationModal] = useState(null)
   const [collapsed, setCollapsed] = useState(false)
+  const [mobileOpen, setMobileOpen] = useState(false)
+
+  // 🔥 AUTO RESPONSIVE (Laptop Collapse)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        setCollapsed(true)
+      } else {
+        setCollapsed(false)
+      }
+    }
+
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
 
   if (profileLoading || authLoading) {
     return (
-      <div className="grid h-[calc(100vh-3.5rem)] min-w-[240px] place-items-center 
-        border-r border-richblack-700 bg-richblack-800/60 backdrop-blur-lg">
+      <div className="grid h-[calc(100vh-3.5rem)] min-w-[240px] place-items-center bg-richblack-800">
         <div className="spinner"></div>
       </div>
     )
@@ -103,77 +48,79 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* 🔥 ALWAYS VISIBLE MINI BAR (WHEN COLLAPSED) */}
-      {collapsed && (
-        <button
-          onClick={() => setCollapsed(false)}
-          className="
-            fixed left-2 top-24 z-[200]
-            flex h-12 w-12 items-center justify-center
-            rounded-xl bg-richblack-800/80 backdrop-blur-lg
-            border border-yellow-500/30
-            text-yellow-50 shadow-lg
-            hover:scale-105 transition
-          "
-        >
-          <VscMenu size={22} />
-        </button>
-      )}
+      {/* 🔥 MOBILE MENU BUTTON */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="md:hidden fixed top-20 left-4 z-[300] bg-richblack-800 p-2 rounded-lg text-white"
+      >
+        <VscMenu size={22} />
+      </button>
 
-      {/* 🔥 MAIN SIDEBAR */}
+      {/* 🔥 SIDEBAR */}
       <AnimatePresence>
-        {!collapsed && (
+        {(mobileOpen || window.innerWidth >= 768) && (
           <motion.div
             initial={{ x: -80, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -80, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="
+            className={`
               fixed md:static z-50
-              flex h-[calc(100vh-3.5rem)]
-              w-[260px]
-              flex-col
+              ${mobileOpen ? "left-0" : "-left-[300px] md:left-0"}
+              ${collapsed ? "w-[80px]" : "w-[260px]"}
+              transition-all duration-300
+              flex h-[calc(100vh-3.5rem)] flex-col
               border-r border-yellow-500/20
-              bg-richblack-800/70 backdrop-blur-xl
-              py-8 shadow-xl
-            "
+              bg-richblack-800/90 backdrop-blur-xl
+              py-6 shadow-xl
+            `}
           >
 
-            {/* 🔥 TOP CONTROLS */}
+            {/* 🔥 TOP BAR */}
             <div className="flex items-center justify-between px-4 mb-6">
 
-              {/* COLLAPSE BUTTON */}
+              {/* TOGGLE BUTTON */}
               <button
-                onClick={() => setCollapsed(true)}
-                className="text-richblack-300 hover:text-yellow-50 transition"
+                onClick={() => setCollapsed(!collapsed)}
+                className="text-white"
               >
                 <VscMenu size={22} />
               </button>
 
-              {/* MOON ICON (THEME READY) */}
-              <FiMoon className="text-yellow-50" />
+              {/* CLOSE (MOBILE) */}
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="md:hidden text-white"
+              >
+                ✕
+              </button>
+
+              {/* ICON */}
+              {!collapsed && <FiMoon className="text-yellow-50 hidden md:block" />}
 
             </div>
 
-            {/* 🔥 PROFILE MINI SECTION */}
-            <div className="flex items-center gap-3 px-5 mb-8">
-              <img
-                src={user?.image}
-                alt="user"
-                className="h-10 w-10 rounded-full object-cover"
-              />
-              <div className="min-w-0">
-                <p className="text-white text-sm font-semibold truncate">
-                  {user.firstName}
-                </p>
-                <p className="text-xs text-richblack-300 truncate">
-                  {user.email}
-                </p>
+            {/* 🔥 USER */}
+            {!collapsed && (
+              <div className="flex items-center gap-3 px-5 mb-8">
+                <img
+                  src={user?.image}
+                  alt="user"
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+                <div className="min-w-0">
+                  <p className="text-white text-sm font-semibold truncate">
+                    {user.firstName}
+                  </p>
+                  <p className="text-xs text-richblack-300 truncate">
+                    {user.email}
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* 🔥 LINKS */}
-            <div className="flex flex-col gap-2 px-3 relative">
+            <div className="flex flex-col gap-2 px-3">
 
               {sidebarLinks.map((link) => {
                 if (link.type && user?.accountType !== link.type) return null
@@ -183,7 +130,7 @@ export default function Sidebar() {
                     key={link.id}
                     link={link}
                     iconName={link.icon}
-                    collapsed={false}
+                    collapsed={collapsed}
                   />
                 )
               })}
@@ -191,7 +138,7 @@ export default function Sidebar() {
             </div>
 
             {/* 🔥 DIVIDER */}
-            <div className="mx-auto my-6 h-[1px] w-10/12 bg-gradient-to-r from-transparent via-richblack-600 to-transparent" />
+            <div className="mx-auto my-6 h-[1px] w-10/12 bg-richblack-700" />
 
             {/* 🔥 SETTINGS + LOGOUT */}
             <div className="flex flex-col gap-2 px-3 mt-auto">
@@ -199,10 +146,9 @@ export default function Sidebar() {
               <SidebarLink
                 link={{ name: "Settings", path: "/dashboard/settings" }}
                 iconName="VscSettingsGear"
-                collapsed={false}
+                collapsed={collapsed}
               />
 
-              {/* LOGOUT */}
               <button
                 onClick={() =>
                   setConfirmationModal({
@@ -214,17 +160,10 @@ export default function Sidebar() {
                     btn2Handler: () => setConfirmationModal(null),
                   })
                 }
-                className="
-                  group flex items-center gap-x-3 
-                  rounded-lg px-4 py-3 
-                  text-sm font-medium 
-                  text-richblack-300
-                  transition-all duration-300
-                  hover:bg-red-500/10 hover:text-red-400
-                "
+                className="flex items-center gap-x-3 px-4 py-3 text-sm text-richblack-300 hover:text-red-400"
               >
-                <VscSignOut className="text-lg transition-transform duration-300 group-hover:rotate-12" />
-                <span>Logout</span>
+                <VscSignOut />
+                {!collapsed && <span>Logout</span>}
               </button>
 
             </div>

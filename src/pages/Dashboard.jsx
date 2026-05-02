@@ -53,15 +53,20 @@ function Dashboard() {
   }
 
   return (
-    <div className="relative flex min-h-[calc(100vh-3.5rem)]">
-      <Sidebar />
-      <div className="h-[calc(100vh-3.5rem)] flex-1 overflow-auto">
-        <div className="mx-auto w-11/12 max-w-[1000px] py-10">
-          <Outlet />
-        </div>
+  <div className="flex min-h-[calc(100vh-3.5rem)] bg-richblack-900 text-white">
+
+    {/* 🔥 SIDEBAR */}
+    <Sidebar />
+
+    {/* 🔥 MAIN CONTENT */}
+    <div className="flex-1 w-full overflow-auto px-4 md:px-8 py-6">
+      <div className="mx-auto w-full max-w-[1200px]">
+        <Outlet />
       </div>
     </div>
-  )
+
+  </div>
+)
 }
 
 export default Dashboard

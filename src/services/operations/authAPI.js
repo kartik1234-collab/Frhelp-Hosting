@@ -15,6 +15,7 @@ const {
 } = endpoints
 
 // ================= SEND OTP =================
+// ================= SEND OTP =================
 export function sendOtp(email, navigate) {
   return async (dispatch) => {
     const toastId = toast.loading("Sending Email...");
@@ -32,29 +33,43 @@ export function sendOtp(email, navigate) {
         throw new Error(response.data.message);
       }
 
-      // 🔥 OTP TOAST UI WITH COPY BUTTON
       const otp = response.data.otp;
 
+      // 🔥 PREMIUM TOAST UI
       toast.custom((t) => (
-        <div className="bg-white shadow-lg rounded-lg p-4 border w-[300px]">
-          <p className="text-sm text-gray-500 mb-2">Your OTP</p>
+        <div
+          className={`${
+            t.visible ? "animate-enter" : "animate-leave"
+          } max-w-md w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 shadow-2xl rounded-xl pointer-events-auto flex flex-col p-5 text-white`}
+        >
+          <div className="flex justify-between items-center">
+            <p className="text-sm font-semibold opacity-80">
+              🔐 OTP Verification
+            </p>
+          </div>
 
-          <div className="flex items-center justify-between">
-            <span className="font-bold text-lg tracking-widest">{otp}</span>
+          <div className="mt-3 flex items-center justify-between">
+            <span className="text-2xl font-bold tracking-widest">
+              {otp}
+            </span>
 
             <button
               onClick={() => {
                 navigator.clipboard.writeText(otp);
-                toast.success("Copied!");
+                toast.success("OTP Copied ✅");
               }}
-              className="text-blue-600 text-sm font-medium"
+              className="bg-white text-purple-600 px-3 py-1 rounded-md text-sm font-semibold hover:bg-gray-200 transition"
             >
               Copy
             </button>
           </div>
+
+          <p className="text-xs mt-2 opacity-80">
+            Valid for a few minutes. Do not share.
+          </p>
         </div>
       ), {
-        duration: 12000, // ⏳ stays longer
+        duration: 15000, // ⏳ longer visibility
       });
 
       navigate("/verify-email");
@@ -71,7 +86,6 @@ export function sendOtp(email, navigate) {
     toast.dismiss(toastId);
   };
 }
-
 // ================= SIGNUP =================
 export function signUp(
   accountType,

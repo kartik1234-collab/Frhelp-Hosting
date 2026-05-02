@@ -1,41 +1,3 @@
-// import * as Icons from "react-icons/vsc"
-// import { useDispatch } from "react-redux"
-// import { NavLink, matchPath, useLocation } from "react-router-dom"
-// // import { resetCourseState } from "../../../slices/courseSlice"
-
-// export default function SidebarLink({ link, iconName }) {
-//   const Icon = Icons[iconName]
-//   const location = useLocation()
-//   const dispatch = useDispatch()
-
-//   const matchRoute = (route) => {
-//     return matchPath({ path: route }, location.pathname)
-//   }
-
-//   return (
-//     <NavLink
-//       to={link.path}
-//     //   onClick={() => dispatch(resetCourseState())}
-//       className={`relative px-8 py-2 text-sm font-medium ${
-//         matchRoute(link.path)
-//           ? "bg-yellow-800 text-yellow-50"
-//           : "bg-opacity-0 text-richblack-300"
-//       } transition-all duration-200`}
-//     >
-//       <span
-//         className={`absolute left-0 top-0 h-full w-[0.15rem] bg-yellow-50 ${
-//           matchRoute(link.path) ? "opacity-100" : "opacity-0"
-//         }`}
-//       ></span>
-//       <div className="flex items-center gap-x-2">
-//         {/* Icon Goes Here */}
-//         <Icon className="text-lg" />
-//         <span>{link.name}</span>
-//       </div>
-//     </NavLink>
-//   )
-// }
-
 import { NavLink } from "react-router-dom"
 import * as Icons from "react-icons/vsc"
 import { motion } from "framer-motion"
@@ -46,9 +8,11 @@ export default function SidebarLink({ link, iconName, collapsed }) {
   return (
     <NavLink
       to={link.path}
+      title={collapsed ? link.name : ""}
       className={({ isActive }) =>
-        `relative flex items-center gap-3 rounded-lg px-4 py-3
-        transition-all duration-300
+        `relative flex items-center rounded-lg px-3 py-3
+        transition-all duration-300 group
+        ${collapsed ? "justify-center" : "gap-3"}
         ${
           isActive
             ? "bg-yellow-500/20 text-yellow-50"
@@ -58,7 +22,7 @@ export default function SidebarLink({ link, iconName, collapsed }) {
     >
       {({ isActive }) => (
         <>
-          {/* 🔥 ACTIVE INDICATOR BAR */}
+          {/* 🔥 ACTIVE INDICATOR */}
           {isActive && (
             <motion.div
               layoutId="activeBar"
@@ -66,15 +30,33 @@ export default function SidebarLink({ link, iconName, collapsed }) {
             />
           )}
 
-          {/* ICON */}
-          <Icon className="text-lg min-w-[20px]" />
+          {/* 🔥 ICON */}
+          <Icon
+            className={`text-lg transition-transform duration-300 ${
+              collapsed ? "scale-110" : ""
+            }`}
+          />
 
-          {/* TEXT */}
+          {/* 🔥 TEXT */}
           {!collapsed && (
-            <span className="text-sm font-medium">{link.name}</span>
+            <span className="text-sm font-medium whitespace-nowrap">
+              {link.name}
+            </span>
           )}
 
-          {/* 🔔 NOTIFICATION BADGE (DEMO) */}
+          {/* 🔥 TOOLTIP (ONLY WHEN COLLAPSED) */}
+          {collapsed && (
+            <span className="
+              absolute left-14 whitespace-nowrap
+              bg-richblack-900 text-white text-xs px-2 py-1 rounded-md
+              opacity-0 group-hover:opacity-100
+              transition duration-200 z-50
+            ">
+              {link.name}
+            </span>
+          )}
+
+          {/* 🔔 DEMO BADGE */}
           {link.name === "Enrolled Courses" && !collapsed && (
             <span className="
               ml-auto rounded-full bg-pink-500 px-2 py-[2px] 
