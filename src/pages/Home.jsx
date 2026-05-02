@@ -65,11 +65,43 @@ const Home = () => {
 
         {/* Code Sections */}
         <div className="mt-16 w-full">
-          <CodeBlocks position="lg:flex-row" />
+          <CodeBlocks 
+  position={"lg:flex-row"}
+  heading={"Learn Coding"}
+  subheading={"Start your journey"}
+  ctabtn1={{
+    btnText: "Start",
+    linkto: "/signup",
+    active: true,
+  }}
+  ctabtn2={{
+    btnText: "Explore",
+    linkto: "/login",
+    active: false,
+  }}
+  codeblock={`console.log("Hello FrHelp");`}
+  codeColor={"text-yellow-25"}
+/>
         </div>
 
         <div className="mt-16 w-full">
-          <CodeBlocks position="lg:flex-row-reverse" />
+          <CodeBlocks 
+  position={"lg:flex-row"}
+  heading={"Learn Coding"}
+  subheading={"Start your journey"}
+  ctabtn1={{
+    btnText: "Start",
+    linkto: "/signup",
+    active: true,
+  }}
+  ctabtn2={{
+    btnText: "Explore",
+    linkto: "/login",
+    active: false,
+  }}
+  codeblock={`console.log("Hello FrHelp");`}
+  codeColor={"text-yellow-25"}
+/>
         </div>
 
         <ExploreMore />
